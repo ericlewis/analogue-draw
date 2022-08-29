@@ -538,6 +538,12 @@ always @(posedge clk_core_12288 or negedge reset_n) begin
                 vidout_rgb[23:16] <= 8'd60;
                 vidout_rgb[15:8]  <= 8'd60;
                 vidout_rgb[7:0]   <= 8'd60;
+
+                if(visible_x >= square_x && visible_x < square_x+50) begin
+                    if(visible_y >= square_y && visible_y < square_y+50) begin
+                        vidout_rgb <= 24'h0; 
+                    end
+                end
                 
             end 
         end
