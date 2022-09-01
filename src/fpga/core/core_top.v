@@ -466,6 +466,7 @@ assign video_hs = vidout_hs;
     localparam  VID_H_BPORCH = 'd10;
     localparam  VID_H_ACTIVE = 'd320;
     localparam  VID_H_TOTAL = 'd400;
+    localparam  SQUARE_SIZE = 'd10;
 
     reg [15:0]  frame_count;
     
@@ -487,8 +488,23 @@ assign video_hs = vidout_hs;
     reg [9:0]   og_square_x = 'd135;
     reg [9:0]   og_square_y = 'd95;
 
-    reg square_horz_move = 1;
-    reg square_vert_move = 1;
+    reg [9:0] square_horz_move = 'd1;
+    reg [9:0] square_vert_move = 'd1;
+
+    wire square_vert_collide = square_y >= VID_V_ACTIVE - SQUARE_SIZE;
+    wire square_horiz_collide = square_x >= VID_H_ACTIVE - SQUARE_SIZE;
+
+always @(posedge square_vert_collide) begin
+    if (square_y >= VID_V_ACTIVE - SQUARE_SIZE) begin
+        square_vert_move <= -square_vert_move;
+    end
+end
+
+always @(posedge square_horiz_collide) begin
+    if (square_x >= VID_H_ACTIVE - SQUARE_SIZE) begin
+        square_horz_move <= -square_horz_move;
+    end
+end
 
 always @(posedge clk_core_12288 or negedge reset_n) begin
 
@@ -527,14 +543,6 @@ always @(posedge clk_core_12288 or negedge reset_n) begin
             vidout_vs <= 1;
             frame_count <= frame_count + 1'b1;
 
-            if (square_x <= 0 || square_x >= VID_H_ACTIVE) begin
-                square_horz_move <= -square_horz_move;
-            end
-
-            if (square_y <= 0 || square_y >= VID_V_ACTIVE) begin
-                square_vert_move <= -square_vert_move;
-            end
-
             square_x <= square_x + square_horz_move;
             square_y <= square_y + square_vert_move;
         end
@@ -559,8 +567,8 @@ always @(posedge clk_core_12288 or negedge reset_n) begin
                 vidout_rgb[15:8]  <= 8'd60;
                 vidout_rgb[7:0]   <= 8'd60;
 
-                if(visible_x >= square_x && visible_x < square_x+10) begin
-                    if(visible_y >= square_y && visible_y < square_y+10) begin
+                if(visible_x >= square_x && visible_x < square_x+SQUARE_SIZE) begin
+                    if(visible_y >= square_y && visible_y < square_y+SQUARE_SIZE) begin
                         vidout_rgb <= 24'h0;
                     end
                 end
