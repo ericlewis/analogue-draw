@@ -1,7 +1,7 @@
 {
   "platform": {
-    "category": "Draw",
-    "name": "Testing",
+    "category": "test",
+    "name": "Draw",
     "year": 2022,
     "manufacturer": "Eric Lewis"
   }
