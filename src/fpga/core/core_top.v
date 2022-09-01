@@ -490,17 +490,6 @@ assign video_hs = vidout_hs;
     reg square_horz_move = 1;
     reg square_vert_move = 1;
 
-    wire square_horz_collide = square_x >= 320 - 10;
-    wire square_vert_collide = square_y >= 240 - 10;
-
-always @(posedge square_horz_collide) begin
-    square_horz_move <= -square_horz_move;
-end
-
-always @(posedge square_vert_collide) begin
-    square_vert_move <= -square_vert_move;
-end
-
 always @(posedge clk_core_12288 or negedge reset_n) begin
 
     if(~reset_n) begin
@@ -540,6 +529,14 @@ always @(posedge clk_core_12288 or negedge reset_n) begin
 
             square_x <= square_x + square_horz_move;
             square_y <= square_y + square_vert_move;
+
+            if (square_x >= 320 - 10) begin
+                square_horz_move <= -square_horz_move;
+            end
+
+            if (square_y >= 240 - 10) begin
+                square_vert_move <= -square_vert_move;
+            end
         end
         
         // we want HS to occur a bit after VS, not on the same cycle
