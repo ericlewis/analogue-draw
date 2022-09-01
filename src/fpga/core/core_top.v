@@ -509,15 +509,11 @@ always @(posedge vidout_vs or negedge reset_n) begin
 end
 
 always @(posedge square_vert_collide) begin
-    if (square_y >= VID_V_ACTIVE - SQUARE_SIZE) begin
-        square_vert_move <= -square_vert_move;
-    end
+    square_vert_move <= -square_vert_move;
 end
 
 always @(posedge square_horiz_collide) begin
-    if (square_x >= VID_H_ACTIVE - SQUARE_SIZE) begin
-        square_horz_move <= -square_horz_move;
-    end
+    square_horz_move <= -square_horz_move;
 end
 
 always @(posedge clk_core_12288 or negedge reset_n) begin
