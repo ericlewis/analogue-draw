@@ -497,7 +497,7 @@ assign video_hs = vidout_hs;
     wire square_horiz_collide = square_x >= VID_H_ACTIVE - SQUARE_SIZE;
 
 always @(posedge vidout_vs or negedge reset_n) begin
-    if (reset) begin
+    if (~reset_n) begin
         // reset ball position to center
         square_y <= SQUARE_Y_INITIAL;
         square_x <= SQUARE_X_INITIAL;
