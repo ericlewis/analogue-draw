@@ -466,7 +466,9 @@ assign video_hs = vidout_hs;
     localparam  VID_H_BPORCH = 'd10;
     localparam  VID_H_ACTIVE = 'd320;
     localparam  VID_H_TOTAL = 'd400;
-    localparam  SQUARE_SIZE = 'd10;
+    localparam  SQUARE_SIZE = 'd15;
+    localparam  SQUARE_X_INITIAL = 'd135;
+    localparam  SQUARE_Y_INITIAL = 'd95;
 
     reg [15:0]  frame_count;
     
@@ -485,14 +487,26 @@ assign video_hs = vidout_hs;
     reg [9:0]   square_x = 'd135;
     reg [9:0]   square_y = 'd95;
 	 
-    reg [9:0]   og_square_x = 'd135;
-    reg [9:0]   og_square_y = 'd95;
+    reg [9:0]   og_square_x = SQUARE_X_INITIAL;
+    reg [9:0]   og_square_y = SQUARE_Y_INITIAL;
 
-    reg [9:0] square_horz_move = 'd1;
+    reg [9:0] square_horz_move = -'d1;
     reg [9:0] square_vert_move = 'd1;
 
     wire square_vert_collide = square_y >= VID_V_ACTIVE - SQUARE_SIZE;
     wire square_horiz_collide = square_x >= VID_H_ACTIVE - SQUARE_SIZE;
+
+always @(posedge vidout_vs or negedge reset_n) begin
+    if (reset) begin
+        // reset ball position to center
+        square_y <= SQUARE_Y_INITIAL;
+        square_x <= SQUARE_X_INITIAL;
+    end else begin
+        // add velocity vector to ball position
+        square_x <= square_x + square_horz_move;
+        square_y <= square_y + square_vert_move;
+    end
+end
 
 always @(posedge square_vert_collide) begin
     if (square_y >= VID_V_ACTIVE - SQUARE_SIZE) begin
@@ -512,9 +526,6 @@ always @(posedge clk_core_12288 or negedge reset_n) begin
     
         x_count <= 0;
         y_count <= 0;
-
-        square_x <= og_square_x;
-        square_y <= og_square_y;
         
     end else begin
         vidout_de <= 0;
@@ -542,9 +553,6 @@ always @(posedge clk_core_12288 or negedge reset_n) begin
             // new frame
             vidout_vs <= 1;
             frame_count <= frame_count + 1'b1;
-
-            square_x <= square_x + square_horz_move;
-            square_y <= square_y + square_vert_move;
         end
         
         // we want HS to occur a bit after VS, not on the same cycle
