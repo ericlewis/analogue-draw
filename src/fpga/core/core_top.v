@@ -527,16 +527,16 @@ always @(posedge clk_core_12288 or negedge reset_n) begin
             vidout_vs <= 1;
             frame_count <= frame_count + 1'b1;
 
-            square_x <= square_x + square_horz_move;
-            square_y <= square_y + square_vert_move;
-
-            if (square_x >= 320 - 10) begin
+            if (square_x <= 0 || square_x >= VID_H_ACTIVE) begin
                 square_horz_move <= -square_horz_move;
             end
 
-            if (square_y >= 240 - 10) begin
+            if (square_y <= 0 || square_y >= VID_V_ACTIVE) begin
                 square_vert_move <= -square_vert_move;
             end
+
+            square_x <= square_x + square_horz_move;
+            square_y <= square_y + square_vert_move;
         end
         
         // we want HS to occur a bit after VS, not on the same cycle
