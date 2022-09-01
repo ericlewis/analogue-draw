@@ -487,22 +487,15 @@ assign video_hs = vidout_hs;
     reg [9:0]   og_square_x = 'd135;
     reg [9:0]   og_square_y = 'd95;
 
-always @(posedge video_vs or negedge reset_n) begin
-    if (~reset_n) begin
-        square_x <= og_square_x;
-        square_y <= og_square_y;
-    end else begin
-        square_x <= square_x + 1;
-        square_y <= square_y + 1;
-    end
-end
-
 always @(posedge clk_core_12288 or negedge reset_n) begin
 
     if(~reset_n) begin
     
         x_count <= 0;
         y_count <= 0;
+
+        square_x <= og_square_x;
+        square_y <= og_square_y;
         
     end else begin
         vidout_de <= 0;
@@ -530,6 +523,9 @@ always @(posedge clk_core_12288 or negedge reset_n) begin
             // new frame
             vidout_vs <= 1;
             frame_count <= frame_count + 1'b1;
+
+            square_x <= square_x + 1'b1;
+            square_y <= square_y + 1'b1;
         end
         
         // we want HS to occur a bit after VS, not on the same cycle
@@ -552,8 +548,8 @@ always @(posedge clk_core_12288 or negedge reset_n) begin
                 vidout_rgb[15:8]  <= 8'd60;
                 vidout_rgb[7:0]   <= 8'd60;
 
-                if(visible_x >= square_x && visible_x < square_x+10) begin
-                    if(visible_y >= square_y && visible_y < square_y+10) begin
+                if(visible_x >= square_x && visible_x < square_x+50) begin
+                    if(visible_y >= square_y && visible_y < square_y+50) begin
                         vidout_rgb <= 24'h0; 
                     end
                 end
