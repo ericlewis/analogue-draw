@@ -487,6 +487,20 @@ assign video_hs = vidout_hs;
     reg [9:0]   og_square_x = 'd135;
     reg [9:0]   og_square_y = 'd95;
 
+    reg square_horz_move = 1;
+    reg square_vert_move = 1;
+
+    wire square_horz_collide = square_x >= 320 - 10;
+    wire square_vert_collide = square_y >= 240 - 10;
+
+always @(posedge square_horz_collide) begin
+    square_horz_move <= -square_horz_move;
+end
+
+always @(posedge square_vert_collide) begin
+    square_vert_move <= -square_vert_move;
+end
+
 always @(posedge clk_core_12288 or negedge reset_n) begin
 
     if(~reset_n) begin
@@ -512,7 +526,7 @@ always @(posedge clk_core_12288 or negedge reset_n) begin
             x_count <= 0;
             
             y_count <= y_count + 1'b1;
-            if(y_count == VID_V_TOTAL-1) begin
+            if (y_count == VID_V_TOTAL-1) begin
                 y_count <= 0;
             end
         end
@@ -524,8 +538,8 @@ always @(posedge clk_core_12288 or negedge reset_n) begin
             vidout_vs <= 1;
             frame_count <= frame_count + 1'b1;
 
-            square_x <= square_x + 1'b1;
-            square_y <= square_y + 1'b1;
+            square_x <= square_x + square_horz_move;
+            square_y <= square_y + square_vert_move;
         end
         
         // we want HS to occur a bit after VS, not on the same cycle
@@ -548,9 +562,9 @@ always @(posedge clk_core_12288 or negedge reset_n) begin
                 vidout_rgb[15:8]  <= 8'd60;
                 vidout_rgb[7:0]   <= 8'd60;
 
-                if(visible_x >= square_x && visible_x < square_x+50) begin
-                    if(visible_y >= square_y && visible_y < square_y+50) begin
-                        vidout_rgb <= 24'h0; 
+                if(visible_x >= square_x && visible_x < square_x+10) begin
+                    if(visible_y >= square_y && visible_y < square_y+10) begin
+                        vidout_rgb <= 24'h0;
                     end
                 end
                 
