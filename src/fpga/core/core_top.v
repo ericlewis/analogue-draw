@@ -494,7 +494,7 @@ assign video_hs = vidout_hs;
     reg [9:0] square_vert_move = 'd1;
 
     wire square_vert_collide = square_y >= VID_V_ACTIVE - SQUARE_SIZE;
-    wire square_horiz_collide = square_x >= VID_H_ACTIVE - SQUARE_SIZE;
+    wire square_horiz_collide = square_x >= 'd340 - SQUARE_SIZE;
 
 always @(posedge vidout_vs or negedge reset_n) begin
     if (~reset_n) begin
