@@ -492,8 +492,8 @@ always @(posedge video_vs or negedge reset_n) begin
         square_x <= og_square_x;
         square_y <= og_square_y;
     end else begin
-        square_x <= square_x + 1
-        square_y <= square_y + 1
+        square_x <= square_x + 1;
+        square_y <= square_y + 1;
     end
 end
 
