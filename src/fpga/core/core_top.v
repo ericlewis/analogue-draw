@@ -483,15 +483,13 @@ assign video_hs = vidout_hs;
     
     reg [9:0]   square_x = 'd135;
     reg [9:0]   square_y = 'd95;
+	 
+	 reg [9:0]   og_square_x = 'd135;
+    reg [9:0]   og_square_y = 'd95;
 
 always @(posedge video_vs or negedge reset_n) begin
-    if (reset) begin
-        square_x => 'd135;
-        square_y => 'd95;
-    end else begin
-        square_x => square_x + 1
-        square_y => square_y + 1
-    end
+	 square_x <= square_x + 1;
+	 square_y <= square_y + 1;
 end
 
 always @(posedge clk_core_12288 or negedge reset_n) begin
