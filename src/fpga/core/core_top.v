@@ -441,16 +441,6 @@ core_bridge_cmd icb (
 
 
 // video generation
-// ~12,288,000 hz pixel clock
-//
-// we want our video mode of 320x240 @ 60hz, this results in 204800 clocks per frame
-// we need to add hblank and vblank times to this, so there will be a nondisplay area. 
-// it can be thought of as a border around the visible area.
-// to make numbers simple, we can have 400 total clocks per line, and 320 visible.
-// dividing 204800 by 400 results in 512 total lines per frame, and 240 visible.
-// this pixel clock is fairly high for the relatively low resolution, but that's fine.
-// PLL output has a minimum output frequency anyway.
-
 
 assign video_rgb_clock = clk_core_12288;
 assign video_rgb_clock_90 = clk_core_12288_90deg;
@@ -460,12 +450,13 @@ assign video_skip = vidout_skip;
 assign video_vs = vidout_vs;
 assign video_hs = vidout_hs;
 
-    localparam  VID_V_BPORCH = 'd10;
-    localparam  VID_V_ACTIVE = 'd240;
-    localparam  VID_V_TOTAL = 'd512;
-    localparam  VID_H_BPORCH = 'd10;
-    localparam  VID_H_ACTIVE = 'd320;
-    localparam  VID_H_TOTAL = 'd400;
+    localparam  VID_V_BPORCH = 'd20;
+    localparam  VID_V_ACTIVE = 'd480;
+    localparam  VID_V_TOTAL = 'd500;
+    localparam  VID_H_BPORCH = 'd160;
+    localparam  VID_H_ACTIVE = 'd640;
+    localparam  VID_H_TOTAL = 'd800;
+
     localparam  SQUARE_SIZE = 'd15;
     localparam  SQUARE_X_INITIAL = 'd135;
     localparam  SQUARE_Y_INITIAL = 'd95;
@@ -494,7 +485,7 @@ assign video_hs = vidout_hs;
     reg [9:0] square_vert_move = 'd1;
 
     wire square_vert_collide = square_y >= VID_V_ACTIVE - SQUARE_SIZE;
-    wire square_horiz_collide = square_x >= 'd325 - SQUARE_SIZE;
+    wire square_horiz_collide = square_x >= VID_H_ACTIVE - SQUARE_SIZE;
 
 always @(posedge vidout_vs or negedge reset_n) begin
     if (~reset_n) begin
